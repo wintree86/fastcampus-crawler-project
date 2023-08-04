@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "ts-node -r tsconfig-paths/register src/index"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.1",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^7.0.4",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.1.6"
+  }
+}
