@@ -1,4 +1,5 @@
 import * as puppeteer from "puppeteer";
+import scheduler from 'node-schedule'
 
 type ArticleType = {
   title?: string;
@@ -32,8 +33,6 @@ const getRecommendArticles = async (page: puppeteer.Page) => {
     const editorEl = document.querySelectorAll(
       "article div.ht > div > div.bl > a > p"
     );
-
-    console.log(linkEl);
 
     const articles: ArticleType[] = [];
 
@@ -90,13 +89,20 @@ const getRecommendArticles = async (page: puppeteer.Page) => {
   });
 };
 
-(async () => {
-  const browser = await initBrowser();
-  const page = await browser.newPage();
-  await page.goto("https://medium.com/tag/react/recommended");
 
-  const articles = await getRecommendArticles(page);
-  console.log(articles);
+const start = async () => {
+    const browser = await initBrowser();
+    const page = await browser.newPage();
+    await page.goto("https://medium.com/tag/react/recommended");
+  
+    const articles = await getRecommendArticles(page);
+    console.log(articles);
+  
+    await browser.close();
+}
 
-  //   await browser.close();
-})();
+scheduler.scheduleJob('0 0 0 * * *', async () => {
+    console.log('Start Crawler')
+	await start();
+    console.log('End Crawler')
+});
