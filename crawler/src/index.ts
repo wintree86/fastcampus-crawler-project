@@ -1,5 +1,13 @@
 import * as puppeteer from "puppeteer";
 
+type ArticleType = {
+  title?: string;
+  description?: string;
+  mainImageUrl?: string;
+  avatarImageUrl?: string;
+  editor?: string;
+};
+
 const initBrowser = async () => {
   const browser = await puppeteer.launch({
     headless: false,
@@ -8,32 +16,78 @@ const initBrowser = async () => {
   return browser;
 };
 
-const login = async (page: puppeteer.Page) => {
-  await page.goto("https://www.saucedemo.com/");
-  await page.type("#user-name", "standard_user");
-  await page.type("#password", "secret_sauce");
-  await page.click("#login-button");
-};
-
-const clickPage = async (page: puppeteer.Page) => {
-  await page.click("#item_4_img_link");
-};
-
-const collectProductInfos = async (page: puppeteer.Page) => {
+const getRecommendArticles = async (page: puppeteer.Page) => {
   return page.evaluate(() => {
-    let productNames: string[] = [];
-    const elements = document.querySelectorAll(".inventory_item_name");
-    elements.forEach((element) => productNames.push(element.innerHTML));
-    return productNames;
+    const elements = document.querySelectorAll(
+      "article h2, article h3, article div.h > img, article div.ht > div > div.bl > a > p, article div.l > img"
+    );
+    const titleEl = document.querySelectorAll("article h2");
+    const descriptionEl = document.querySelectorAll("article h3");
+    const mainImageEl = document.querySelectorAll("article div.h > img");
+    const avatarEl = document.querySelectorAll("article div.l > img");
+    const editorEl = document.querySelectorAll(
+      "article div.ht > div > div.bl > a > p"
+    );
+
+    const articles: ArticleType[] = [];
+
+    let obj: ArticleType = {};
+
+    function checkObjectKey<T>(obj: T, key: keyof T) {
+      if (obj[key] === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function setObjectKey<T>(obj: T, key: keyof T, value: T[keyof T]) {
+      if (checkObjectKey<T>(obj, key)) {
+        obj[key] = value;
+      } else {
+        resetObject();
+      }
+    }
+
+    function resetObject() {
+      articles.push(obj);
+      obj = {};
+    }
+
+    elements.forEach((element) => {
+      switch (element.nodeName) {
+        case "IMG":
+          if (element.className === "l hs bx hn ho ec") {
+            setObjectKey(obj, "avatarImageUrl", (element as any)?.src);
+          } else if (element.className === "bw lh") {
+            obj.mainImageUrl = (element as any)?.src;
+            setObjectKey(obj, "mainImageUrl", (element as any)?.src);
+          }
+          break;
+        case "H2":
+          setObjectKey(obj, "title", element.innerHTML);
+          break;
+        case "H3":
+          setObjectKey(obj, "description", element.innerHTML);
+          break;
+        case "P":
+          setObjectKey(obj, "editor", element.innerHTML);
+          break;
+        default:
+          break;
+      }
+    });
+    return articles;
   });
 };
 
 (async () => {
   const browser = await initBrowser();
   const page = await browser.newPage();
-  await login(page);
-  //   await clickPage(page);
-  const infos = await collectProductInfos(page);
-  console.log(infos);
+  await page.goto("https://medium.com/tag/react/recommended");
+
+  const articles = await getRecommendArticles(page);
+  console.log(articles);
+
   await browser.close();
 })();
