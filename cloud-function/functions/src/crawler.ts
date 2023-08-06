@@ -21,16 +21,35 @@ export default class Crawler {
     });
     return browser;
   }
+
+  async scraping(page: puppeteer.Page, keyword: string) {
+    await page.goto(`https://medium.com/tag/${keyword}/recommended`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    return this.getRecommendArticles(page);
+  }
+
   async start() {
     const firestore = new Database(db);
     const browser = await this.initBrowser();
     const page = await browser.newPage();
-    await page.goto("https://medium.com/tag/react/recommended", {
-      waitUntil: "domcontentloaded",
-    });
 
-    const articles = await this.getRecommendArticles(page);
+    const keywordResults = await firestore.getAllData("keywords");
 
+    let articles: ArticleType[] = [];
+
+    for (const result of keywordResults) {
+      const _article = await this.scraping(page, result.keyword);
+      const mergeKeyword = _article.map((ar) => ({
+        ...ar,
+        keyword: result.keyword,
+      }));
+      
+      articles.push(...mergeKeyword);
+    }
+
+    // insert data
     const result = await Promise.all(
       articles.map(async (article) => {
         const checkExist = await firestore.getData(
@@ -42,7 +61,7 @@ export default class Crawler {
         if (checkExist.length > 0) {
           return null;
         } else {
-          const doc = await firestore.addData("article", article);
+          const doc = await firestore.addData("articles", article);
           return doc.id;
         }
       })
@@ -58,16 +77,16 @@ export default class Crawler {
       const elements = document.querySelectorAll(
         "article div.l.er.ib > a:nth-child(1), article h2, article h3, article div.h > img, article div.ht > div > div.bl > a > p, article div.l > img"
       );
-      const linkEl = document.querySelectorAll(
-        "article div.l.er.ib > a:nth-child(1)"
-      );
-      const titleEl = document.querySelectorAll("article h2");
-      const descriptionEl = document.querySelectorAll("article h3");
-      const mainImageEl = document.querySelectorAll("article div.h > img");
-      const avatarEl = document.querySelectorAll("article div.l > img");
-      const editorEl = document.querySelectorAll(
-        "article div.ht > div > div.bl > a > p"
-      );
+      // const linkEl = document.querySelectorAll(
+      //   "article div.l.er.ib > a:nth-child(1)"
+      // );
+      // const titleEl = document.querySelectorAll("article h2");
+      // const descriptionEl = document.querySelectorAll("article h3");
+      // const mainImageEl = document.querySelectorAll("article div.h > img");
+      // const avatarEl = document.querySelectorAll("article div.l > img");
+      // const editorEl = document.querySelectorAll(
+      //   "article div.ht > div > div.bl > a > p"
+      // );
 
       const articles: ArticleType[] = [];
 

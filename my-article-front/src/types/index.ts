@@ -5,4 +5,9 @@ export interface Article {
     description?: string;
     mainImageUrl?: string;
     avatarImageUrl?: string;
+    link: string;
+}
+
+export interface Keyword {
+    keyword: string;
 }

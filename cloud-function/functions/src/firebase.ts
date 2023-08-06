@@ -50,4 +50,14 @@ export class Database {
 
     return result;
   }
+  async getAllData(collections: string) {
+    const querySnapshot = await getDocs(collection(this.db, collections));
+
+    let result: any = [];
+    querySnapshot.forEach((doc) => {
+      result.push(doc.data());
+    });
+
+    return result;
+  }
 }
