@@ -16,7 +16,6 @@ function Header() {
       <RegisterKeywordModal
         isOpen={openKeywordModal}
         onOpenClose={() => setOpenKeywordModal(false)}
-        onSubmit={() => setOpenKeywordModal(false)}
       />
     </>
   );

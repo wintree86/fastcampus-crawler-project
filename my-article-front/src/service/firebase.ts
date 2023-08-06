@@ -7,6 +7,8 @@ import {
   query,
   where,
   getDocs,
+  setDoc,
+  doc,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -36,6 +38,10 @@ export class Database {
 
   async addData<T extends object>(collections: string, createData: T) {
     return addDoc(collection(this.db, collections), createData);
+  }
+
+  async setData<T extends object>(collections: string, key: string, value: T) {
+    return setDoc(doc(this.db, collections, key), value);
   }
 
   async getData(collections: string, key: string, value: string) {

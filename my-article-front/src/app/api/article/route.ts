@@ -12,3 +12,4 @@ export async function GET(request: NextRequest, response: NextResponse) {
     return new NextResponse(null, { status: 500 });
   }
 }
+
