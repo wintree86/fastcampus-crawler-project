@@ -24,11 +24,17 @@ export const startCrawler = functions
     response.send("End Crawler");
   });
 
-exports.scheduledFunctionCrontab = functions
+export const scheduleFunctionCronTab = functions
   .region("asia-northeast3")
-  .pubsub.schedule("0 1 * * *")
+  .runWith({
+    memory: "2GB",
+    timeoutSeconds: 120,
+  })
+  .pubsub.schedule("* 3 * * *")
   .timeZone("Asia/Seoul")
-  .onRun((context) => {
-    console.log("Hello World");
+  .onRun(async () => {
+    functions.logger.info("Start Crawler", { structuredData: true });
+    const crawler = new Crawler();
+    await crawler.start();
     return null;
   });
