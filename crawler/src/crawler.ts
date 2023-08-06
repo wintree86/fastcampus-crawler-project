@@ -1,5 +1,6 @@
 import * as puppeteer from "puppeteer";
 import { ArticleType } from "./types";
+import { Database, db } from "./firebase";
 
 export default class Crawler {
   async initBrowser() {
@@ -10,12 +11,31 @@ export default class Crawler {
     return browser;
   }
   async start() {
+    const firestore = new Database(db);
     const browser = await this.initBrowser();
     const page = await browser.newPage();
-      await page.goto("https://medium.com/tag/react/recommended");
+    await page.goto("https://medium.com/tag/react/recommended");
 
-      const articles = await this.getRecommendArticles(page);
-      console.log(articles);
+    const articles = await this.getRecommendArticles(page);
+
+    const result = await Promise.all(
+      articles.map(async (article) => {
+        const checkExist = await firestore.getData(
+          "article",
+          "title",
+          article.title as string
+        );
+
+        if (checkExist.length > 0) {
+          return null;
+        } else {
+          const doc = await firestore.addData("article", article);
+          return doc.id;
+        }
+      })
+    );
+
+    console.log(result);
 
     await browser.close();
   }
