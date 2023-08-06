@@ -10,18 +10,55 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAVpA1suyMCLWmJ9dwVCRBVxjtKQB22HUY",
-    authDomain: "my-article-44313.firebaseapp.com",
-    projectId: "my-article-44313",
-    storageBucket: "my-article-44313.appspot.com",
-    messagingSenderId: "725663048577",
-    appId: "1:725663048577:web:540da29f9130570c63fe80",
-  };
-  
-  export let app: FirebaseApp;
-  
-  try {
-    app = getApp("app");
-  } catch (e) {
-    app = initializeApp(firebaseConfig, "app");
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_APIKEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECTID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APPID,
+};
+
+export let app: FirebaseApp;
+
+try {
+  app = getApp("app");
+} catch (e) {
+  app = initializeApp(firebaseConfig, "app");
+}
+
+export const db = getFirestore(app);
+
+export class Database {
+  constructor(db: Firestore) {
+    this.db = db;
   }
+  private readonly db: Firestore;
+
+  async addData<T extends object>(collections: string, createData: T) {
+    return addDoc(collection(this.db, collections), createData);
+  }
+
+  async getData(collections: string, key: string, value: string) {
+    const querySnapshot = await getDocs(
+      query(collection(this.db, collections), where(key, "==", value))
+    );
+
+    let result: any = [];
+    querySnapshot.forEach((doc) => {
+      result.push(doc.data());
+    });
+
+    return result;
+  }
+
+  async getAllData(collections: string) {
+    const querySnapshot = await getDocs(collection(this.db, collections));
+
+    let result: any = [];
+    querySnapshot.forEach((doc) => {
+      result.push(doc.data());
+    });
+
+    return result;
+  }
+}

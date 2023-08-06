@@ -12,9 +12,9 @@ function ArticleItem({ article }: ArticleBoxProps) {
       <div className="flex justify-between pb-3">
         <div className="flex gap-x-3 mb-4">
           <div className="w-[20px] h-[20px] overflow-hidden rounded-full">
-            <img src={article.avatarImgUrl} />
+            <img src={article.avatarImageUrl} />
           </div>
-          <span className="text-gray-500">{article.author}</span>
+          <span className="text-gray-500">{article.editor}</span>
         </div>
         <div>
           <Chip>{article.keyword}</Chip>
@@ -26,8 +26,8 @@ function ArticleItem({ article }: ArticleBoxProps) {
           <p className="text-lg font-semibold">{article.title}</p>
           <span className="text-sm text-gray-500">{article.description}</span>
         </div>
-        <div className="w-[80px]">
-          <img src={article.mainImgUrl} />
+        <div className="min-w-[80px]">
+          <img src={article.mainImageUrl} />
         </div>
       </div>
     </div>

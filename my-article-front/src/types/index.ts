@@ -1,8 +1,8 @@
 export interface Article {
-    author: string;
+    editor: string;
     title: string;
-    keyword: string;
+    keyword?: string;
     description?: string;
-    mainImgUrl?: string;
-    avatarImgUrl?: string;
+    mainImageUrl?: string;
+    avatarImageUrl?: string;
 }
