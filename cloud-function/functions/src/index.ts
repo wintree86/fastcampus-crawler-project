@@ -12,6 +12,7 @@ export const helloWorld = functions
   });
 
 export const startCrawler = functions
+  .region("asia-northeast3")
   .runWith({
     memory: "2GB",
     timeoutSeconds: 120,
@@ -21,4 +22,13 @@ export const startCrawler = functions
     const crawler = new Crawler();
     await crawler.start();
     response.send("End Crawler");
+  });
+
+exports.scheduledFunctionCrontab = functions
+  .region("asia-northeast3")
+  .pubsub.schedule("0 1 * * *")
+  .timeZone("Asia/Seoul")
+  .onRun((context) => {
+    console.log("Hello World");
+    return null;
   });

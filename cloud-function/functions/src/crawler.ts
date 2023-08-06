@@ -5,8 +5,19 @@ import { Database, db } from "./firebase";
 export default class Crawler {
   async initBrowser() {
     const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox", "--disable-dev-shm-usage"],
+      headless: true,
+      args: [
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-setuid-sandbox",
+        "--no-first-run",
+        "--no-sandbox",
+        "--no-zygote",
+        "--single-process",
+        "--proxy-server='direct://'",
+        "--proxy-bypass-list=*",
+        "--deterministic-fetch",
+      ],
     });
     return browser;
   }
