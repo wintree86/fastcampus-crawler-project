@@ -3,6 +3,7 @@
     "start": "ts-node -r tsconfig-paths/register src/index"
   },
   "dependencies": {
+    "firebase": "^10.1.0",
     "node-schedule": "^2.1.1",
     "puppeteer": "^21.0.1",
     "ts-node": "^10.9.1"
