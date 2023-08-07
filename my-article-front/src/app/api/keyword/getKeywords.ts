@@ -1,10 +1,12 @@
 import { Keyword } from "@/types";
 
 export const getKeywords = async () => {
-  const response = await fetch(`http://localhost:3001/api/keyword`);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/keyword`
+  );
 
   if (!response.ok) {
-    throw new Error("something went to wrong");
+    return { keywords: [] };
   }
 
   return (await response.json()) as { keywords: Keyword[] };

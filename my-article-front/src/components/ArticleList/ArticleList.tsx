@@ -1,5 +1,3 @@
-"use client";
-import { Article } from "@/types";
 import ArticleItem from "../Common/ArticleItem";
 import { getArticles } from "@/app/api/article/getArticles";
 

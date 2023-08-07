@@ -1,6 +1,4 @@
-"use client";
 import { getKeywords } from "@/app/api/keyword/getKeywords";
-import { Chip } from "@nextui-org/react";
 
 async function ManagedKeyword() {
   const { keywords } = await getKeywords();
@@ -10,7 +8,7 @@ async function ManagedKeyword() {
       <div className="flex gap-x-2">
         {keywords &&
           keywords.map((keyword) => (
-            <Chip key={keyword.keyword}>{keyword.keyword}</Chip>
+            <div key={keyword.keyword}>{keyword.keyword}</div>
           ))}
       </div>
     </div>
